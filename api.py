@@ -1,3 +1,5 @@
+import gradio as gr
+from api import *
 from soni_translate.languages_gui import language_data, news
 import copy
 import logging
@@ -96,6 +98,42 @@ from soni_translate.text_multiformat_processor import (
     create_video_from_images,
     merge_video_and_audio,
 )
+class TTS_Info:
+    def __init__(self, piper_enabled, xtts_enabled):
+        self.list_edge = edge_tts_voices_list()
+        self.list_bark = list(BARK_VOICES_LIST.keys())
+        self.list_vits = list(VITS_VOICES_LIST.keys())
+        self.list_openai_tts = OPENAI_TTS_MODELS
+        self.piper_enabled = piper_enabled
+        self.list_vits_onnx = (
+            piper_tts_voices_list() if self.piper_enabled else []
+        )
+        self.xtts_enabled = xtts_enabled
+
+    def tts_list(self):
+        self.list_coqui_xtts = (
+            coqui_xtts_voices_list() if self.xtts_enabled else []
+        )
+        list_tts = self.list_coqui_xtts + sorted(
+            self.list_edge
+            + self.list_bark
+            + self.list_vits
+            + self.list_openai_tts
+            + self.list_vits_onnx
+        )
+        return list_tts
+
+
+def prog_disp(msg, percent, is_gui, progress=None):
+    logger.info(msg)
+    if is_gui:
+        progress(percent, desc=msg)
+
+
+def warn_disp(wrn_lang, is_gui):
+    logger.warning(wrn_lang)
+    if is_gui:
+        gr.Warning(wrn_lang)
 
 class SoniTrCache:
     def __init__(self):
