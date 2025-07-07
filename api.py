@@ -1,3 +1,14 @@
+from soni_translate.languages_gui import language_data, news
+import copy
+import logging
+import json
+from pydub import AudioSegment
+from voice_main import ClassVoices
+import argparse
+import time
+import hashlib
+import sys
+
 from soni_translate.logging_setup import (
     logger,
     set_logging_level,
